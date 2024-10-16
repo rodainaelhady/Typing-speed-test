@@ -1,0 +1,68 @@
+import tkinter as tk
+import time
+import random
+import string
+
+class TypingSpeedTest:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Typing Speed Test")
+        self.master.geometry("800x600")
+
+        self.prompt_label = tk.Label(master, text="", wraplength=600)
+        self.prompt_label.pack(pady=50)
+
+        self.input_entry = tk.Entry(master, width=80, font=("Arial", 24))
+        self.input_entry.pack(pady=20)
+
+        self.start_button = tk.Button(master, text="Start", command=self.start_test)
+        self.start_button.pack(pady=10)
+
+        self.result_label = tk.Label(master, text="", wraplength=600)
+        self.result_label.pack(pady=20)
+
+        self.reset_button = tk.Button(master, text="Reset", command=self.reset_test)
+        self.reset_button.pack(pady=10)
+
+        self.time_elapsed = 0
+        self.input_text = ""
+        self.word = ""
+        self.wpm = 0
+        self.accuracy = 0
+        self.essay = open("C:\\Users\\rodai\\Pictures\\Screenshots\\essay.txt").read().split("\n")
+
+    def start_test(self):
+        self.prompt_label.config(text=random.choice(self.essay))
+        self.input_entry.focus()
+        self.start_time = time.time()
+        self.reset_button.config(state="normal")
+
+    def reset_test(self):
+        self.input_entry.delete(0, tk.END)
+        self.result_label.config(text="")
+        self.prompt_label.config(text="")
+        self.start_time = 0
+        self.time_elapsed = 0
+        self.input_text = ""
+        self.word = ""
+        self.wpm = 0
+        self.accuracy = 0
+        self.reset_button.config(state="disabled")
+
+    def calculate_results(self):
+        self.input_text = self.input_entry.get()
+        self.word = self.prompt_label.cget("text")
+        self.time_elapsed = time.time() - self.start_time
+        self.wpm = len(self.input_text.split()) / (self.time_elapsed / 60)
+        self.accuracy = sum(c1 == c2 for c1, c2 in zip(self.input_text, self.word)) / len(self.word) * 100
+        self.result_label.config(text=f"Time: {self.time_elapsed:.2f} seconds\n"
+                                      f"Words per minute: {self.wpm:.2f}\n"
+                                      f"Accuracy: {self.accuracy:.2f}%")
+
+    def run(self):
+        self.master.mainloop()
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = TypingSpeedTest(root)
+    app.run()
